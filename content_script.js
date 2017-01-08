@@ -19,7 +19,7 @@ function getCurrentUrl() {
     //console.log(arrayOpts.length);
     if (arrayOpts.length != 0) {
         pages = (arrayOpts.length - 1) * 2; //calculate  amount of pages
-        console.log(pages);
+        console.log("Page length:"+pages);
     } else {
         flag = false;
         alert("找不到書碼");
@@ -29,10 +29,16 @@ function getCurrentUrl() {
     //console.log(arrayLis);
     if (arrayLis.length != 0) {
         src = arrayLis[0].src //retrive first img url
-        console.log(src);
+        console.log("Parsing url: "+src);
     } else {
         flag = false;
         alert("找不到內容");
+    }
+
+    //http://voler.ebook4rent.tw/book/img?p=1&f=jpg&r=150&preferWidth=950&preferHeight=1920&bookId=xxxx&token=xxx&bookToken=xxx
+    if(src.indexOf("?p=1&")<0){
+        flag = false;
+        alert("找不到封面位址");
     }
 
     //url length enough, and pages more than one
@@ -48,7 +54,7 @@ function getCurrentUrl() {
         if (tempIndex === undefined || tempIndex < 0) {
             tempIndex = 0;
         }
-        console.log(tempIndex);
+        console.log("Send index:"+tempIndex);
 
         //console.log(links);
         chrome.extension.sendRequest({
@@ -68,6 +74,7 @@ if (typeof chrome.runtime.onMessage.myListenerAdded == "undefined")
     chrome.runtime.onMessage.addListener(saveIndex);
 }
 function saveIndex(request, sender, sendResponse) {
+    console.log("Save index:");
     console.log(request);
     tempIndex = request.index;
 }
