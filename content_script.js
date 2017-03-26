@@ -2,7 +2,7 @@ getCurrentUrl();
 
 function getCurrentUrl() {
 
-    var bookName, pages, src;
+    var bookName, pages, src, src1, src2, audioSrc;
     var flag = true;
 
     var arrayName = document.querySelectorAll("div.top_bookname"); //page combobox
@@ -35,32 +35,67 @@ function getCurrentUrl() {
         alert("找不到內容");
     }
 
+    //chack page of url
+    if(flag){
+        src1 = src.substring(0, 38); //head
+        src2 = src.substring(39); //tail
+        if( src1.charAt(src1.length-1) != "=" ||　src2.charAt(0) != "&" ){
+            flag = false;
+            console.log("src1:"+src1);
+            console.log("src2:"+src2);
+            alert("頁碼不正確");
+        }
+    }
+
+    //0-39 40-
+    //http://voler.ebook4rent.tw/book/audio?p=5&code=3&bookId=xxx&token=xxx&bookToken=xxx
+    var audioTmp = document.querySelectorAll("div audio"); //mp3
+    if (audioTmp.length != 0) {
+        audioSrc = audioTmp[0].src //retrive first img url
+        console.log("Parsing audio url: "+src);
+    } else {
+
+    }
+
     //http://voler.ebook4rent.tw/book/img?p=1&f=jpg&r=150&preferWidth=950&preferHeight=1920&bookId=xxxx&token=xxx&bookToken=xxx
     if(src.indexOf("?p=1&")<0){
         flag = false;
         alert("找不到封面位址");
     }
+    //flag = false;
 
     //url length enough, and pages more than one
     if (flag && src.length > 40 && pages > 1) {
+        //for photo
         var links = [];
-        var src1 = src.substring(0, 38); //head
-        var src2 = src.substring(39); //tail
         //pages = 3; //for test
         for (i = 1; i <= pages; i++) {
             links.push(src1 + i + src2);
         }
 
+        //photo index
         if (tempIndex === undefined || tempIndex < 0) {
             tempIndex = 0;
         }
         console.log("Send index:"+tempIndex);
 
+        //for audio
+        var audioLinks = [];
+        if(audioSrc != undefined && audioSrc.length > 41){
+            var audioSrc1 = audioSrc.substring(0, 39); //head
+            var audioSrc2 = audioSrc.substring(40); //tail
+            //pages = 3; //for test
+            for (i = 1; i <= pages; i++) {
+                audioLinks.push(audioSrc1 + i + audioSrc2);
+            }
+        }
+
         //console.log(links);
         chrome.extension.sendRequest({
             links: links,
             dir: bookName,
-            index: tempIndex
+            index: tempIndex,
+            audios: audioLinks
         });
     }
 }
